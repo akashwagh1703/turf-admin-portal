@@ -1,0 +1,167 @@
+{
+    "admin": {
+        "kpis": {
+            "totalTurfs": 12,
+            "totalBookings": 345,
+            "revenueThisMonth": 95000,
+            "activeUsers": 45,
+            "newOwners": 3,
+            "newPlayers": 18
+        },
+        "charts": {
+            "revenueTrend": [
+                12000,
+                15000,
+                18000,
+                20000,
+                17000,
+                13000
+            ],
+            "bookingsByTurf": [
+                {
+                    "name": "Turf A",
+                    "value": 120
+                },
+                {
+                    "name": "Turf B",
+                    "value": 80
+                },
+                {
+                    "name": "Turf C",
+                    "value": 145
+                }
+            ],
+            "turfStatus": [
+                {
+                    "name": "Active",
+                    "value": 9
+                },
+                {
+                    "name": "Inactive",
+                    "value": 3
+                }
+            ]
+        },
+        "alerts": [
+            {
+                "type": "danger",
+                "message": "Server downtime reported for Turf C"
+            },
+            {
+                "type": "warning",
+                "message": "Revenue growth slowed this week"
+            },
+            {
+                "type": "info",
+                "message": "2 new owners pending verification"
+            }
+        ]
+    },
+    "manager": {
+        "kpis": {
+            "turfOccupancy": "78%",
+            "bookingsToday": 24,
+            "pendingApprovals": 5
+        },
+        "charts": {
+            "bookingTrend": [
+                5,
+                12,
+                8,
+                15,
+                9,
+                20,
+                18
+            ]
+        },
+        "upcomingBookings": [
+            {
+                "id": 1,
+                "customer": "Rahul",
+                "time": "10:00 AM",
+                "turf": "Turf A"
+            },
+            {
+                "id": 2,
+                "customer": "Sneha",
+                "time": "12:30 PM",
+                "turf": "Turf B"
+            }
+        ]
+    },
+    "staff": {
+        "kpis": {
+            "assignedBookings": 6,
+            "checkinsToday": 3,
+            "pendingTasks": 2
+        },
+        "schedule": [
+            {
+                "time": "9:00 AM",
+                "task": "Prepare Turf A"
+            },
+            {
+                "time": "11:00 AM",
+                "task": "Assist Check-in Turf B"
+            },
+            {
+                "time": "2:00 PM",
+                "task": "Clean Turf C"
+            }
+        ],
+        "supportRequests": [
+            {
+                "id": 1,
+                "issue": "Booking Refund",
+                "customer": "Amit"
+            },
+            {
+                "id": 2,
+                "issue": "Reschedule Request",
+                "customer": "Pooja"
+            }
+        ]
+    },
+    "bookings": [
+        {
+            "id": 1,
+            "customer": "Rahul Sharma",
+            "turf": "Turf A",
+            "date": "2025-08-28",
+            "time": "18:00-20:00",
+            "status": "Confirmed"
+        },
+        {
+            "id": 2,
+            "customer": "Sneha Patil",
+            "turf": "Turf B",
+            "date": "2025-08-28",
+            "time": "20:00-22:00",
+            "status": "Pending"
+        },
+        {
+            "id": 3,
+            "customer": "Vikas Joshi",
+            "turf": "Turf C",
+            "date": "2025-08-29",
+            "time": "06:00-08:00",
+            "status": "Confirmed"
+        },
+        {
+            "id": 4,
+            "customer": "Neha Kulkarni",
+            "turf": "Turf A",
+            "date": "2025-08-29",
+            "time": "08:00-10:00",
+            "status": "Cancelled"
+        },
+        {
+            "id": 5,
+            "customer": "Aman Gupta",
+            "turf": "Turf D",
+            "date": "2025-08-30",
+            "time": "19:00-21:00",
+            "status": "Confirmed"
+        }
+    ]
+}

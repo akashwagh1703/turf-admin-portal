@@ -1,0 +1,14 @@
+:root{
+  --sidebar-width: 260px;
+}
+body { background: #f5f6fa; }
+.app-layout { min-height: 100vh; }
+.sidebar {
+  width: var(--sidebar-width);
+  background: #0d6efd;
+  color: #fff;
+}
+.sidebar .nav-link { color: #cfe2ff; }
+.sidebar .nav-link.active, .sidebar .nav-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.content { margin-left: var(--sidebar-width); }
+.card-kpi .value { font-size: 1.75rem; font-weight: 700; }
