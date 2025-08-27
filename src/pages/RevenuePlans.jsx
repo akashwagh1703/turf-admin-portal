@@ -7,7 +7,8 @@ function PlanForm({ plan, setPlan, onSave, role }) {
   const handleChange = (key, value) => setPlan({ ...plan, [key]: value });
 
   return (
-    <div className="mb-3">
+    <div className="card p-3 shadow-sm mb-3">
+      <h6 className="mb-3">Plan Details</h6>
       <input
         className="form-control mb-2"
         placeholder="Plan Name"
@@ -59,8 +60,8 @@ function PlanForm({ plan, setPlan, onSave, role }) {
         disabled={role !== "admin"}
       />
       {role === "admin" && (
-        <button className="btn btn-primary" onClick={() => onSave(plan)}>
-          Save Plan
+        <button className="btn btn-primary w-100" onClick={() => onSave(plan)}>
+          💾 Save Plan
         </button>
       )}
     </div>
@@ -77,31 +78,36 @@ function TurfOwnerPlans({ turfOwners, plans, onAssign, role }) {
   return (
     <div>
       {turfOwners.map((t) => (
-        <div key={t.id} className="mb-2 d-flex align-items-center">
-          <span className="me-3">
-            {t.name} ({t.status}) - Next Billing: {t.nextBillingDate || "-"}
+        <div key={t.id} className="card p-2 mb-2 shadow-sm d-flex flex-row align-items-center justify-content-between">
+          <span>
+            <strong>{t.name}</strong> ({t.status}) <br />
+            <small className="text-muted">
+              Next Billing: {t.nextBillingDate || "N/A"}
+            </small>
           </span>
-          <select
-            className="form-select w-auto"
-            value={selected[t.id] || t.planId || ""}
-            onChange={(e) => handleChange(t.id, Number(e.target.value))}
-            disabled={role !== "admin"}
-          >
-            <option value="">-- Select Plan --</option>
-            {plans.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-          {role === "admin" && (
-            <button
-              className="btn btn-sm btn-primary ms-2"
-              onClick={() => onAssign(t.id, selected[t.id])}
+          <div className="d-flex align-items-center">
+            <select
+              className="form-select w-auto"
+              value={selected[t.id] || t.planId || ""}
+              onChange={(e) => handleChange(t.id, Number(e.target.value))}
+              disabled={role !== "admin"}
             >
-              Assign
-            </button>
-          )}
+              <option value="">-- Select Plan --</option>
+              {plans.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+            {role === "admin" && (
+              <button
+                className="btn btn-sm btn-primary ms-2"
+                onClick={() => onAssign(t.id, selected[t.id])}
+              >
+                Assign
+              </button>
+            )}
+          </div>
         </div>
       ))}
     </div>
@@ -126,14 +132,15 @@ function PromoCodes({ codes, setCodes, onSave, role, plans }) {
         maxUsage: 0,
         used: 0,
         applicablePlans: [],
-        newUsersOnly: false,
-      },
+        newUsersOnly: false
+      }
     ]);
 
   return (
     <div>
       {codes.map((c, i) => (
-        <div key={i} className="card p-2 mb-2 shadow-sm">
+        <div key={i} className="card p-3 mb-2 shadow-sm">
+          <h6 className="mb-2">Promo Code #{i + 1}</h6>
           <div className="d-flex gap-2 flex-wrap">
             <input
               type="text"
@@ -225,7 +232,7 @@ function PromoCodes({ codes, setCodes, onSave, role, plans }) {
             className="btn btn-primary"
             onClick={() => codes.forEach(onSave)}
           >
-            Save Codes
+            💾 Save All Codes
           </button>
         </div>
       )}
@@ -235,7 +242,9 @@ function PromoCodes({ codes, setCodes, onSave, role, plans }) {
 
 // ---------------- Main RevenuePlans ----------------
 export default function RevenuePlans() {
-  const { user, role } = useAuth(); // role: "admin" | "manager"
+  const { user } = useAuth(); // role: "admin" | "manager"
+  // console.log('user:::',user.role)
+  const role = user?.role.toLowerCase();
   const [plans, setPlans] = useState([]);
   const [turfOwners, setTurfOwners] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState({});
@@ -264,22 +273,21 @@ export default function RevenuePlans() {
   const savePlan = (plan) =>
     planService
       .savePlan(plan)
-      .then(() => planService.listPlans().then(setPlans));
+      .then((res) => setPlans(res.plans));
 
   const assignPlan = (ownerId, planId) =>
-    planService.assignPlan(ownerId, planId);
+    planService.assignPlan(ownerId, planId).then((res) => setTurfOwners(res.turfOwners));
 
   const savePromoCode = (code) =>
     planService
       .savePromoCode(code)
-      .then(() => planService.listPromoCodes().then(setPromoCodes));
+      .then((res) => setPromoCodes(res.promoCodes));
 
   return (
     <div className="container-fluid">
       <h5 className="mb-3">Revenue & Plan Management</h5>
       <p className="text-muted">
-        Manages pricing models, turf subscription plans, commissions, and
-        promotional codes.
+        Manage pricing models, subscription plans, commissions, and promotional codes.
       </p>
 
       <ul className="nav nav-tabs mb-3">
@@ -295,7 +303,7 @@ export default function RevenuePlans() {
         ))}
       </ul>
 
-      <div className="card shadow-sm p-3">
+      <div>
         {activeTab === "Plans" && (
           <PlanForm
             plan={selectedPlan}
