@@ -1,20 +1,16 @@
 import { useEffect, useState } from "react";
 import * as settingsService from "../services/settingsService.js";
+import { Form, Row, Col, Button, InputGroup, ListGroup } from "react-bootstrap";
+import { Save, Trash2 } from "lucide-react";
 
-// Tabs Component
+// ---------------- Tabs ----------------
 function Tabs({ activeTab, setActiveTab }) {
   const tabs = [
-    "Pages",
-    "Notifications",
-    "Payment Gateway",
-    "Global Settings",
-    "Announcements",
-    "Theme & Branding",
-    "SEO & Features",
-    "Role Permissions",
+    "Pages", "Notifications", "Payment Gateway", "Global Settings", 
+    "Announcements", "SEO & Features", "Role Permissions",
   ];
   return (
-    <ul className="nav nav-tabs mb-3">
+    <ul className="nav custom-tabs">
       {tabs.map((tab) => (
         <li className="nav-item" key={tab}>
           <button
@@ -29,373 +25,302 @@ function Tabs({ activeTab, setActiveTab }) {
   );
 }
 
-// Page Editor
-function PageEditor({ pages, setPages }) {
-  const [selectedPage, setSelectedPage] = useState(Object.keys(pages)[0] || "");
-
-  const handleChange = (e) =>
-    setPages({ ...pages, [selectedPage]: e.target.value });
-
-  return (
-    <div>
-      <select
-        className="form-select w-auto mb-2"
-        value={selectedPage}
-        onChange={(e) => setSelectedPage(e.target.value)}
-      >
-        {Object.keys(pages).map((p) => (
-          <option key={p} value={p}>
-            {p}
-          </option>
-        ))}
-      </select>
-      <textarea
-        className="form-control"
-        rows={8}
-        value={pages[selectedPage]}
-        onChange={handleChange}
-      />
-      <button
-        className="btn btn-primary mt-2"
-        onClick={() =>
-          settingsService.savePage(selectedPage, pages[selectedPage])
-        }
-      >
-        Save Page
-      </button>
-    </div>
-  );
-}
-
-// Notification Templates
-function NotificationTemplates({ templates, setTemplates }) {
-  const handleChange = (type, key, value) => {
-    setTemplates({
-      ...templates,
-      [type]: { ...templates[type], [key]: value },
-    });
-  };
-
-  return (
-    <div>
-      {Object.keys(templates).map((type) => (
-        <div key={type}>
-          <h6>{type}</h6>
-          {Object.keys(templates[type]).map((key) => (
-            <div className="mb-2" key={key}>
-              <label className="form-label">{key}</label>
-              <textarea
-                className="form-control"
-                rows={2}
-                value={templates[type][key]}
-                onChange={(e) => handleChange(type, key, e.target.value)}
-              />
-            </div>
-          ))}
-        </div>
-      ))}
-      <button
-        className="btn btn-primary"
-        onClick={() => settingsService.saveTemplates(templates)}
-      >
-        Save Templates
-      </button>
-    </div>
-  );
-}
-
-// Payment Gateway
-function PaymentGateway({ credentials, setCredentials }) {
-  const handleChange = (type, key, value) => {
-    setCredentials({
-      ...credentials,
-      [type]: { ...credentials[type], [key]: value },
-    });
-  };
-
-  return (
-    <div>
-      {Object.keys(credentials).map((type) => (
-        <div key={type}>
-          <h6>{type}</h6>
-          {Object.keys(credentials[type]).map((key) => (
-            <div className="mb-2" key={key}>
-              <label className="form-label">{key}</label>
-              <input
-                type="text"
-                className="form-control"
-                value={credentials[type][key]}
-                onChange={(e) => handleChange(type, key, e.target.value)}
-              />
-            </div>
-          ))}
-        </div>
-      ))}
-      <button
-        className="btn btn-primary"
-        onClick={() => settingsService.savePayment(credentials)}
-      >
-        Save Payment Credentials
-      </button>
-    </div>
-  );
-}
-
-// Global Settings
-function GlobalSettings({ settings, setSettings }) {
-  const handleChange = (key, value) =>
-    setSettings({ ...settings, [key]: value });
-
-  return (
-    <div>
-      {Object.keys(settings).map((key) => (
-        <div className="mb-2" key={key}>
-          <label className="form-label">{key}</label>
-          <input
-            type="text"
-            className="form-control w-auto"
-            value={settings[key]}
-            onChange={(e) => handleChange(key, e.target.value)}
-          />
-        </div>
-      ))}
-      <button
-        className="btn btn-primary"
-        onClick={() => settingsService.saveGlobal(settings)}
-      >
-        Save Global Settings
-      </button>
-    </div>
-  );
-}
-
-// Announcements
-function Announcements({ announcements, setAnnouncements }) {
-  const handleChange = (index, value) => {
-    const updated = [...announcements];
-    updated[index] = value;
-    setAnnouncements(updated);
-  };
-  const addAnnouncement = () => setAnnouncements([...announcements, ""]);
-
-  return (
-    <div>
-      {announcements.map((a, i) => (
-        <input
-          type="text"
-          className="form-control mb-2"
-          key={i}
-          value={a}
-          onChange={(e) => handleChange(i, e.target.value)}
-        />
-      ))}
-      <button
-        className="btn btn-sm btn-secondary me-2"
-        onClick={addAnnouncement}
-      >
-        + Add Announcement
-      </button>
-      <button
-        className="btn btn-primary"
-        onClick={() => settingsService.saveAnnouncements(announcements)}
-      >
-        Save Announcements
-      </button>
-    </div>
-  );
-}
-
-// Theme & Branding
-function ThemeBranding({ theme, setTheme }) {
-  const handleChange = (key, value) => setTheme({ ...theme, [key]: value });
-
-  return (
-    <div>
-      <div className="mb-2">
-        <label className="form-label">Platform Name</label>
-        <input
-          className="form-control"
-          value={theme.platformName || ""}
-          onChange={(e) => handleChange("platformName", e.target.value)}
-        />
-      </div>
-      <div className="mb-2">
-        <label className="form-label">Logo URL</label>
-        <input
-          className="form-control"
-          value={theme.logo || ""}
-          onChange={(e) => handleChange("logo", e.target.value)}
-        />
-      </div>
-      <button
-        className="btn btn-primary"
-        onClick={() => settingsService.saveTheme(theme)}
-      >
-        Save Theme
-      </button>
-    </div>
-  );
-}
-
-// SEO & Features
-function SEOFeatures({ seo, features, setSEO, setFeatures }) {
-  const handleSEOChange = (key, value) => setSEO({ ...seo, [key]: value });
-  const handleFeatureChange = (key, value) =>
-    setFeatures({ ...features, [key]: value });
-
-  return (
-    <div>
-      <h6>SEO Settings</h6>
-      {Object.keys(seo).map((key) => (
-        <div className="mb-2" key={key}>
-          <label className="form-label">{key}</label>
-          <input
-            className="form-control"
-            value={seo[key]}
-            onChange={(e) => handleSEOChange(key, e.target.value)}
-          />
-        </div>
-      ))}
-      <h6 className="mt-3">Feature Toggles</h6>
-      {Object.keys(features).map((key) => (
-        <div className="form-check mb-2" key={key}>
-          <input
-            className="form-check-input"
-            type="checkbox"
-            checked={features[key]}
-            onChange={(e) => handleFeatureChange(key, e.target.checked)}
-          />
-          <label className="form-check-label">{key}</label>
-        </div>
-      ))}
-      <button
-        className="btn btn-primary mt-2"
-        onClick={() => {
-          settingsService.saveSEO(seo);
-          settingsService.saveFeatures(features);
-        }}
-      >
-        Save SEO & Features
-      </button>
-    </div>
-  );
-}
-
-// Role Permissions
-function RolePermissions({ roles, setRoles }) {
-  const handleChange = (role, key, value) =>
-    setRoles({
-      ...roles,
-      [role]: { ...roles[role], [key]: value },
-    });
-
-  return (
-    <div>
-      {Object.keys(roles).map((role) => (
-        <div key={role} className="mb-3">
-          <h6>{role}</h6>
-          {Object.keys(roles[role]).map((key) => (
-            <div className="form-check" key={key}>
-              <input
-                className="form-check-input"
-                type="checkbox"
-                checked={roles[role][key]}
-                onChange={(e) => handleChange(role, key, e.target.checked)}
-              />
-              <label className="form-check-label">{key}</label>
-            </div>
-          ))}
-        </div>
-      ))}
-      <button
-        className="btn btn-primary"
-        onClick={() => {
-          Object.keys(roles).forEach((role) =>
-            settingsService.saveRolePermissions(role, roles[role])
-          );
-        }}
-      >
-        Save Role Permissions
-      </button>
-    </div>
-  );
-}
-
-// Main Component
-export default function ContentSettings() {
-  const [activeTab, setActiveTab] = useState("Pages");
-  const [pages, setPages] = useState({});
-  const [templates, setTemplates] = useState({});
-  const [credentials, setCredentials] = useState({});
-  const [settings, setSettings] = useState({});
-  const [announcements, setAnnouncements] = useState([]);
-  const [theme, setTheme] = useState({});
-  const [seo, setSEO] = useState({});
-  const [features, setFeatures] = useState({});
-  const [roles, setRoles] = useState({});
+// ---------------- Page Editor ----------------
+function PageEditor({ data, onSave }) {
+  const [selectedPage, setSelectedPage] = useState(Object.keys(data)[0] || "");
+  const [content, setContent] = useState(data[selectedPage] || "");
 
   useEffect(() => {
-    settingsService.getSettings().then((data) => {
-      setPages(data.pages || {});
-      setTemplates(data.templates || {});
-      setCredentials(data.credentials || {});
-      setSettings(data.global || {});
-      setAnnouncements(data.announcements || []);
-      setTheme(data.theme || {});
-      setSEO(data.seo || {});
-      setFeatures(data.features || {});
-      setRoles(data.roles || {});
+    setContent(data[selectedPage] || "");
+  }, [selectedPage, data]);
+
+  const handleSave = () => {
+    onSave("pages", { ...data, [selectedPage]: content });
+    alert(`Page "${selectedPage}" saved!`);
+  };
+
+  return (
+    <div>
+      <h5 className="mb-3">Page Content Editor</h5>
+      <Form.Select className="w-auto mb-3" value={selectedPage} onChange={(e) => setSelectedPage(e.target.value)}>
+        {Object.keys(data).map((p) => <option key={p} value={p}>{p}</option>)}
+      </Form.Select>
+      <Form.Control as="textarea" rows={12} value={content} onChange={(e) => setContent(e.target.value)} />
+      <Button className="mt-3 d-flex align-items-center gap-2" onClick={handleSave}><Save size={16} /> Save Page Content</Button>
+    </div>
+  );
+}
+
+// ---------------- Notifications Settings ----------------
+function NotificationsSettings({ data, onSave }) {
+    const [templates, setTemplates] = useState(data);
+
+    const handleChange = (type, key, value) => {
+        setTemplates(prev => ({ ...prev, [type]: { ...prev[type], [key]: value } }));
+    };
+
+    const handleSave = () => {
+        onSave("templates", templates);
+        alert("Notification templates saved!");
+    }
+
+    return (
+        <div>
+            <h5 className="mb-4">Notification Templates</h5>
+            {Object.entries(templates).map(([type, group]) => (
+                <div key={type} className="mb-4">
+                    <h6>{type} Templates</h6>
+                    <Row className="g-3">
+                        {Object.entries(group).map(([key, value]) => (
+                            <Col md={6} key={key}>
+                                <Form.Group>
+                                    <Form.Label>{key.replace(/([A-Z])/g, ' $1')}</Form.Label>
+                                    <Form.Control as="textarea" rows={4} value={value} onChange={e => handleChange(type, key, e.target.value)} />
+                                </Form.Group>
+                            </Col>
+                        ))}
+                    </Row>
+                </div>
+            ))}
+            <Button className="mt-3 d-flex align-items-center gap-2" onClick={handleSave}><Save size={16} /> Save Templates</Button>
+        </div>
+    );
+}
+
+// ---------------- Payment Gateway Settings ----------------
+function PaymentSettings({ data, onSave }) {
+    const [credentials, setCredentials] = useState(data);
+
+    const handleChange = (gateway, key, value) => {
+        setCredentials(prev => ({ ...prev, [gateway]: { ...prev[gateway], [key]: value } }));
+    };
+
+    const handleSave = () => {
+        onSave("credentials", credentials);
+        alert("Payment credentials saved!");
+    }
+
+    return (
+        <div>
+            <h5 className="mb-4">Payment Gateway Credentials</h5>
+            <Row className="g-4">
+                {Object.entries(credentials).map(([gateway, keys]) => (
+                    <Col md={6} key={gateway}>
+                        <div className="card">
+                            <div className="card-header text-capitalize">{gateway}</div>
+                            <div className="card-body">
+                                {Object.entries(keys).map(([key, value]) => (
+                                    <Form.Group key={key} className="mb-3">
+                                        <Form.Label>{key.replace(/([A-Z])/g, ' $1')}</Form.Label>
+                                        <Form.Control type="password" value={value} onChange={e => handleChange(gateway, key, e.target.value)} />
+                                    </Form.Group>
+                                ))}
+                            </div>
+                        </div>
+                    </Col>
+                ))}
+            </Row>
+            <Button className="mt-4 d-flex align-items-center gap-2" onClick={handleSave}><Save size={16} /> Save Credentials</Button>
+        </div>
+    );
+}
+
+// ---------------- Global Settings ----------------
+function GlobalSettings({ data, onSave }) {
+    const [settings, setSettings] = useState(data);
+
+    const handleChange = (key, value, isCheckbox = false) => {
+        setSettings(prev => ({ ...prev, [key]: isCheckbox ? value : e.target.value }));
+    };
+    
+    const handleSave = () => {
+        onSave("global", settings);
+        alert("Global settings saved!");
+    };
+
+    return (
+        <div>
+            <h5 className="mb-4">Global Platform Settings</h5>
+            <Row className="g-3">
+                <Col md={4}><Form.Group><Form.Label>Currency</Form.Label><Form.Control value={settings.currency} onChange={e => setSettings({...settings, currency: e.target.value})} /></Form.Group></Col>
+                <Col md={4}><Form.Group><Form.Label>Timezone</Form.Label><Form.Control value={settings.timezone} onChange={e => setSettings({...settings, timezone: e.target.value})} /></Form.Group></Col>
+                <Col md={4}><Form.Group><Form.Label>Business Hours</Form.Label><Form.Control value={settings.businessHours} onChange={e => setSettings({...settings, businessHours: e.target.value})} /></Form.Group></Col>
+                <Col md={4}><Form.Group><Form.Label>Date Format</Form.Label><Form.Control value={settings.dateFormat} onChange={e => setSettings({...settings, dateFormat: e.target.value})} /></Form.Group></Col>
+                <Col md={4}><Form.Group><Form.Label>Time Format</Form.Label><Form.Control value={settings.timeFormat} onChange={e => setSettings({...settings, timeFormat: e.target.value})} /></Form.Group></Col>
+                <Col md={4}><Form.Group><Form.Label>Tax (%)</Form.Label><Form.Control type="number" value={settings.taxPercent} onChange={e => setSettings({...settings, taxPercent: e.target.value})} /></Form.Group></Col>
+                <Col md={4}><Form.Group><Form.Label>Commission (%)</Form.Label><Form.Control type="number" value={settings.commissionPercent} onChange={e => setSettings({...settings, commissionPercent: e.target.value})} /></Form.Group></Col>
+                <Col md={12} className="mt-4">
+                    <Form.Check type="switch" id="auto-confirm" label="Automatically confirm new bookings" checked={settings.autoConfirmBookings} onChange={e => setSettings({...settings, autoConfirmBookings: e.target.checked})} />
+                </Col>
+            </Row>
+            <Button className="mt-4 d-flex align-items-center gap-2" onClick={handleSave}><Save size={16} /> Save Global Settings</Button>
+        </div>
+    );
+}
+
+// ---------------- Announcements Settings ----------------
+function AnnouncementsSettings({ data, onSave }) {
+    const [announcements, setAnnouncements] = useState(data);
+    const [newAnnouncement, setNewAnnouncement] = useState("");
+
+    const addAnnouncement = () => {
+        if (!newAnnouncement.trim()) return;
+        const updated = [...announcements, newAnnouncement];
+        setAnnouncements(updated);
+        setNewAnnouncement("");
+        onSave("announcements", updated);
+    };
+
+    const removeAnnouncement = (index) => {
+        const updated = announcements.filter((_, i) => i !== index);
+        setAnnouncements(updated);
+        onSave("announcements", updated);
+    };
+    
+    return (
+        <div>
+            <h5 className="mb-3">Platform Announcements</h5>
+            <InputGroup className="mb-3">
+                <Form.Control placeholder="New announcement..." value={newAnnouncement} onChange={(e) => setNewAnnouncement(e.target.value)} />
+                <Button onClick={addAnnouncement}>Add</Button>
+            </InputGroup>
+            <ListGroup>
+                {announcements.map((item, index) => (
+                    <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
+                        {item}
+                        <button className="icon-button text-danger" onClick={() => removeAnnouncement(index)}><Trash2 size={16} /></button>
+                    </ListGroup.Item>
+                ))}
+            </ListGroup>
+        </div>
+    );
+}
+
+// ---------------- SEO & Features Settings ----------------
+function SeoAndFeaturesSettings({ seoData, featuresData, onSave }) {
+    const [seo, setSeo] = useState(seoData);
+    const [features, setFeatures] = useState(featuresData);
+
+    const handleSave = () => {
+        onSave("seo", seo);
+        onSave("features", features);
+        alert("SEO & Features saved!");
+    };
+
+    return (
+        <div>
+            <Row className="g-4">
+                <Col lg={6}>
+                    <h5 className="mb-3">SEO Settings</h5>
+                    <Form.Group className="mb-3"><Form.Label>Meta Title</Form.Label><Form.Control value={seo.metaTitle} onChange={e => setSeo({...seo, metaTitle: e.target.value})} /></Form.Group>
+                    <Form.Group className="mb-3"><Form.Label>Meta Description</Form.Label><Form.Control as="textarea" rows={3} value={seo.metaDescription} onChange={e => setSeo({...seo, metaDescription: e.target.value})} /></Form.Group>
+                    <Form.Group><Form.Label>Meta Keywords (comma-separated)</Form.Label><Form.Control value={seo.metaKeywords.join(', ')} onChange={e => setSeo({...seo, metaKeywords: e.target.value.split(',').map(k => k.trim())})} /></Form.Group>
+                </Col>
+                <Col lg={6}>
+                    <h5 className="mb-3">Feature Flags</h5>
+                    <div className="card">
+                        <ListGroup variant="flush">
+                            {Object.entries(features).map(([key, value]) => (
+                                <ListGroup.Item key={key}>
+                                    <Form.Check type="switch" id={`feature-${key}`} label={key.replace(/([A-Z])/g, ' $1')} checked={value} onChange={e => setFeatures({...features, [key]: e.target.checked})} />
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </div>
+                </Col>
+            </Row>
+            <Button className="mt-4 d-flex align-items-center gap-2" onClick={handleSave}><Save size={16} /> Save SEO & Features</Button>
+        </div>
+    );
+}
+
+// ---------------- Role Permissions Settings ----------------
+function RolePermissionsSettings({ data, onSave }) {
+    const [roles, setRoles] = useState(data);
+
+    const handlePermissionChange = (role, permission, checked) => {
+        setRoles(prev => ({ ...prev, [role]: { ...prev[role], [permission]: checked } }));
+    };
+
+    const handleSave = () => {
+        onSave("roles", roles);
+        alert("Role permissions saved!");
+    };
+
+    return (
+        <div>
+            <h5 className="mb-3">Role-Based Permissions</h5>
+            <Row className="g-4">
+                {Object.entries(roles).map(([role, permissions]) => (
+                    <Col md={6} lg={4} key={role}>
+                        <div className="card h-100">
+                            <div className="card-header">{role}</div>
+                            <ListGroup variant="flush">
+                                {Object.entries(permissions).map(([permission, value]) => (
+                                    <ListGroup.Item key={permission}>
+                                        <Form.Check type="switch" id={`${role}-${permission}`} label={permission.replace(/([A-Z])/g, ' $1')} checked={value} onChange={e => handlePermissionChange(role, permission, e.target.checked)} />
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        </div>
+                    </Col>
+                ))}
+            </Row>
+            <Button className="mt-4 d-flex align-items-center gap-2" onClick={handleSave}><Save size={16} /> Save Permissions</Button>
+        </div>
+    );
+}
+
+
+// ---------------- Main Component ----------------
+export default function ContentSettings() {
+  const [activeTab, setActiveTab] = useState("Pages");
+  const [settingsData, setSettingsData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    settingsService.getSettings().then(data => {
+      setSettingsData(data);
+      setLoading(false);
     });
   }, []);
 
+  const handleSave = (key, data) => {
+    setSettingsData(prev => ({ ...prev, [key]: data }));
+    // In a real app, you'd call the specific service function
+    // e.g., settingsService.saveGlobal(data)
+    console.log(`Saving ${key}...`, data);
+  };
+
+  const renderContent = () => {
+    if (loading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
+    if (!settingsData) return <p>Could not load settings.</p>;
+
+    switch (activeTab) {
+      case "Pages": return <PageEditor data={settingsData.pages} onSave={handleSave} />;
+      case "Notifications": return <NotificationsSettings data={settingsData.templates} onSave={handleSave} />;
+      case "Payment Gateway": return <PaymentSettings data={settingsData.credentials} onSave={handleSave} />;
+      case "Global Settings": return <GlobalSettings data={settingsData.global} onSave={handleSave} />;
+      case "Announcements": return <AnnouncementsSettings data={settingsData.announcements} onSave={handleSave} />;
+      case "SEO & Features": return <SeoAndFeaturesSettings seoData={settingsData.seo} featuresData={settingsData.features} onSave={handleSave} />;
+      case "Role Permissions": return <RolePermissionsSettings data={settingsData.roles} onSave={handleSave} />;
+      default: return null;
+    }
+  };
+
   return (
-    <div className="container-fluid">
-      <h5 className="mb-3">Content & Settings Management</h5>
-      <p className="text-muted">
-        Manages all global settings and static content of the platform.
-      </p>
+    <div className="container-fluid p-0">
+      <div className="page-header">
+        <h3>Content & Settings</h3>
+        <p className="text-muted">Manage all global settings and static content of the platform.</p>
+      </div>
 
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div className="card shadow-sm p-3">
-        {activeTab === "Pages" && (
-          <PageEditor pages={pages} setPages={setPages} />
-        )}
-        {activeTab === "Notifications" && (
-          <NotificationTemplates
-            templates={templates}
-            setTemplates={setTemplates}
-          />
-        )}
-        {activeTab === "Payment Gateway" && (
-          <PaymentGateway
-            credentials={credentials}
-            setCredentials={setCredentials}
-          />
-        )}
-        {activeTab === "Global Settings" && (
-          <GlobalSettings settings={settings} setSettings={setSettings} />
-        )}
-        {activeTab === "Announcements" && (
-          <Announcements
-            announcements={announcements}
-            setAnnouncements={setAnnouncements}
-          />
-        )}
-        {activeTab === "Theme & Branding" && (
-          <ThemeBranding theme={theme} setTheme={setTheme} />
-        )}
-        {activeTab === "SEO & Features" && (
-          <SEOFeatures
-            seo={seo}
-            features={features}
-            setSEO={setSEO}
-            setFeatures={setFeatures}
-          />
-        )}
-        {activeTab === "Role Permissions" && (
-          <RolePermissions roles={roles} setRoles={setRoles} />
-        )}
+      <div className="card">
+        <div className="card-body">
+          {renderContent()}
+        </div>
       </div>
     </div>
   );

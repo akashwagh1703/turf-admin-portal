@@ -1,30 +1,14 @@
 import { useEffect, useState } from "react";
 import * as userService from "../services/userService.js";
-
-// Role Filter Component
-function RoleFilter({ filterRole, setFilterRole }) {
-  return (
-    <div className="mb-2">
-      <select
-        className="form-select w-auto"
-        value={filterRole}
-        onChange={(e) => setFilterRole(e.target.value)}
-      >
-        <option value="All">All Roles</option>
-        <option value="Super Admin">Super Admin</option>
-        <option value="Turf Owner">Turf Owner</option>
-        <option value="Support">Support</option>
-      </select>
-    </div>
-  );
-}
+import { Plus, Edit, ToggleLeft, ToggleRight, KeyRound, Activity } from "lucide-react";
+import { Modal, Form, Row, Col, Button } from "react-bootstrap";
 
 // Users Table Component
 function UsersTable({ users, onEdit, toggleStatus, resetPassword }) {
   return (
-    <div className="card shadow-sm">
+    <div className="card">
       <div className="table-responsive">
-        <table className="table mb-0 align-middle">
+        <table className="table mb-0 align-middle table-hover">
           <thead>
             <tr>
               <th>#</th>
@@ -36,35 +20,34 @@ function UsersTable({ users, onEdit, toggleStatus, resetPassword }) {
             </tr>
           </thead>
           <tbody>
-            {users.map((u) => (
-              <tr key={u.id} onDoubleClick={() => onEdit(u)}>
-                <td>{u.id}</td>
-                <td>{u.name}</td>
+            {users.map((u, i) => (
+              <tr key={u.id}>
+                <td>{i + 1}</td>
+                <td><strong>{u.name}</strong></td>
                 <td>{u.email}</td>
                 <td>
-                  <span className="badge bg-primary">{u.role}</span>
+                  <span className="badge bg-primary-subtle text-primary-emphasis rounded-pill">{u.role}</span>
                 </td>
                 <td>
                   {u.status === "Active" ? (
-                    <span className="badge bg-success">Active</span>
+                    <span className="badge bg-success-subtle text-success-emphasis rounded-pill">Active</span>
                   ) : (
-                    <span className="badge bg-danger">Inactive</span>
+                    <span className="badge bg-danger-subtle text-danger-emphasis rounded-pill">Inactive</span>
                   )}
                 </td>
                 <td>
-                  <button
-                    className="btn btn-sm btn-warning me-2"
-                    onClick={() => toggleStatus(u.id)}
-                  >
-                    {u.status === "Active" ? "Deactivate" : "Activate"}
+                  <button className="icon-button" title="Edit" onClick={() => onEdit(u)}>
+                    <Edit size={16} />
                   </button>
-                  <button
-                    className="btn btn-sm btn-secondary me-2"
-                    onClick={() => resetPassword(u.id)}
-                  >
-                    Reset Password
+                  <button className="icon-button" title={u.status === "Active" ? "Deactivate" : "Activate"} onClick={() => toggleStatus(u.id)}>
+                    {u.status === "Active" ? <ToggleRight size={16} className="text-success" /> : <ToggleLeft size={16} />}
                   </button>
-                  <button className="btn btn-sm btn-info">Logs</button>
+                  <button className="icon-button" title="Reset Password" onClick={() => resetPassword(u.id)}>
+                    <KeyRound size={16} />
+                  </button>
+                  <button className="icon-button" title="Activity Logs">
+                    <Activity size={16} />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -76,126 +59,58 @@ function UsersTable({ users, onEdit, toggleStatus, resetPassword }) {
 }
 
 function UserModal({ show, handleClose, user, setUser, onSave }) {
+  if(!show || !user) return null;
+  
   return (
-    <div
-      className={`modal fade ${show ? "show d-block" : ""}`}
-      tabIndex="-1"
-      aria-hidden={!show}
-      style={{ backgroundColor: show ? "rgba(0,0,0,0.5)" : "transparent" }}
-    >
-      <div className="modal-dialog">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">
-              {user?.id ? "Edit User" : "Create New User"}
-            </h5>
-            <button
-              type="button"
-              className="btn-close"
-              onClick={handleClose}
-            ></button>
-          </div>
-          <div className="modal-body">
-            {/* Name */}
-            <div className="mb-2">
-              <label className="form-label">Name</label>
-              <input
-                type="text"
-                className="form-control"
-                value={user.name}
-                onChange={(e) => setUser({ ...user, name: e.target.value })}
-              />
-            </div>
-
-            {/* Email */}
-            <div className="mb-2">
-              <label className="form-label">Email</label>
-              <input
-                type="email"
-                className="form-control"
-                value={user.email}
-                onChange={(e) => setUser({ ...user, email: e.target.value })}
-              />
-            </div>
-
-            {/* Phone */}
-            <div className="mb-2">
-              <label className="form-label">Phone</label>
-              <input
-                type="text"
-                className="form-control"
-                value={user.phone}
-                onChange={(e) => setUser({ ...user, phone: e.target.value })}
-              />
-            </div>
-
-            {/* Role */}
-            <div className="mb-2">
-              <label className="form-label">Role</label>
-              <select
-                className="form-select"
-                value={user.role}
-                onChange={(e) => setUser({ ...user, role: e.target.value })}
-              >
-                <option value="Super Admin">Super Admin</option>
-                <option value="Turf Owner">Turf Owner</option>
-                <option value="Support">Support</option>
-              </select>
-            </div>
-
-            {/* Conditional fields */}
-            {user.role === "Turf Owner" && (
-              <div className="mb-2">
-                <label className="form-label">Turf Name</label>
-                <input
-                  className="form-control"
-                  value={user.turfName}
-                  onChange={(e) =>
-                    setUser({ ...user, turfName: e.target.value })
-                  }
-                />
-              </div>
-            )}
-
-            {user.role === "Support" && (
-              <div className="mb-2">
-                <label className="form-label">Permissions</label>
-                <select
-                  className="form-select"
-                  multiple
-                  value={user.permissions}
-                  onChange={(e) =>
-                    setUser({
-                      ...user,
-                      permissions: Array.from(
-                        e.target.selectedOptions,
-                        (opt) => opt.value
-                      ),
-                    })
-                  }
-                >
-                  <option value="View Tickets">View Tickets</option>
-                  <option value="Resolve Tickets">Resolve Tickets</option>
-                  <option value="Escalate Issues">Escalate Issues</option>
-                </select>
-                <small className="text-muted">
-                  Hold Ctrl (Windows) or Cmd (Mac) to select multiple.
-                </small>
-              </div>
-            )}
-          </div>
-
-          <div className="modal-footer">
-            <button className="btn btn-secondary" onClick={handleClose}>
-              Cancel
-            </button>
-            <button className="btn btn-primary" onClick={onSave}>
-              {user?.id ? "Update" : "Create"}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Modal show={show} onHide={handleClose} centered size="lg">
+      <Modal.Header closeButton>
+        <Modal.Title>
+          {user?.id ? "Edit User" : "Create New User"}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <Row className="g-3">
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Full Name</Form.Label>
+                <Form.Control type="text" placeholder="John Doe" value={user.name} onChange={(e) => setUser({ ...user, name: e.target.value })} />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Email Address</Form.Label>
+                <Form.Control type="email" placeholder="john.doe@example.com" value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Phone Number</Form.Label>
+                <Form.Control type="text" placeholder="+1 234 567 890" value={user.phone || ''} onChange={(e) => setUser({ ...user, phone: e.target.value })} />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Role</Form.Label>
+                <Form.Select value={user.role} onChange={(e) => setUser({ ...user, role: e.target.value })}>
+                  <option value="Admin">Admin</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Staff">Staff</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button variant="primary" onClick={onSave}>
+          {user?.id ? "Update User" : "Create User"}
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }
 
@@ -205,58 +120,38 @@ export default function Users() {
   const [filterRole, setFilterRole] = useState("All");
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
-  const [formUser, setFormUser] = useState({
-    name: "",
-    email: "",
-    role: "Turf Owner",
-    phone: "",
-    turfName: "",
-    permissions: [],
-  });
 
   useEffect(() => {
-    userService.listUsers().then(setUsers);
+    userService.listUsers().then(u => {
+        const transformedUsers = u.map(user => ({
+            ...user,
+            role: user.role.split(' ').find(r => ['Admin', 'Manager', 'Staff'].includes(r)) || 'Staff'
+        }));
+        setUsers(transformedUsers);
+    });
   }, []);
 
   const filteredUsers =
     filterRole === "All" ? users : users.filter((u) => u.role === filterRole);
 
   const openForm = (user = null) => {
-    setEditingUser(user);
-    setFormUser(
-      user || {
-        name: "",
-        email: "",
-        role: "Turf Owner",
-        phone: "",
-        turfName: "",
-        permissions: [],
-      }
-    );
+    setEditingUser(user || { name: "", email: "", role: "Manager", phone: "" });
     setShowForm(true);
   };
 
   const handleCloseForm = () => {
     setShowForm(false);
     setEditingUser(null);
-    setFormUser({
-      name: "",
-      email: "",
-      role: "Turf Owner",
-      phone: "",
-      turfName: "",
-      permissions: [],
-    });
   };
 
   const handleSaveUser = () => {
-    if (editingUser) {
-      userService.updateUser(editingUser.id, formUser).then((updated) => {
+    if (editingUser.id) {
+      userService.updateUser(editingUser.id, editingUser).then((updated) => {
         setUsers(users.map((u) => (u.id === updated.id ? updated : u)));
         handleCloseForm();
       });
     } else {
-      userService.createUser(formUser).then((newU) => {
+      userService.createUser(editingUser).then((newU) => {
         setUsers([...users, newU]);
         handleCloseForm();
       });
@@ -277,15 +172,29 @@ export default function Users() {
   };
 
   return (
-    <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5>Users Management</h5>
-        <button className="btn btn-primary btn-sm" onClick={() => openForm()}>
-          + New User
+    <div className="container-fluid p-0">
+      <div className="page-header d-flex justify-content-between align-items-center">
+        <div>
+          <h3>Users Management</h3>
+          <p className="text-muted">Manage all users, roles, and permissions.</p>
+        </div>
+        <button className="btn btn-primary d-flex align-items-center gap-2" onClick={() => openForm()}>
+          <Plus size={18} /> New User
         </button>
       </div>
 
-      <RoleFilter filterRole={filterRole} setFilterRole={setFilterRole} />
+      <div className="d-flex justify-content-start mb-3">
+        <select
+            className="form-select w-auto"
+            value={filterRole}
+            onChange={(e) => setFilterRole(e.target.value)}
+        >
+            <option value="All">All Roles</option>
+            <option value="Admin">Admin</option>
+            <option value="Manager">Manager</option>
+            <option value="Staff">Staff</option>
+        </select>
+      </div>
 
       <UsersTable
         users={filteredUsers}
@@ -297,8 +206,8 @@ export default function Users() {
       <UserModal
         show={showForm}
         handleClose={handleCloseForm}
-        user={formUser}
-        setUser={setFormUser}
+        user={editingUser}
+        setUser={setEditingUser}
         onSave={handleSaveUser}
       />
     </div>

@@ -1,26 +1,15 @@
 // src/services/dashboardService.js
 import data from "../mock/dashboard.json";
 
-export async function overview(role = "staff") {
-  await new Promise((r) => setTimeout(r, 220));
-  const key = role?.toLowerCase() || "staff"; // normalize role
-  // console.log(data[key])
-  return data[key]?.kpis || {};
+export async function getDashboardData(role = "staff") {
+  await new Promise((r) => setTimeout(r, 300));
+  const key = role?.toLowerCase() || "staff";
+  return data[key] || {};
 }
 
-export async function extra(role = "staff") {
-  await new Promise((r) => setTimeout(r, 220));
-  const key = role?.toLowerCase() || "staff"; // normalize role
-  return {
-    charts: data[key]?.charts || {},
-    upcomingBookings: data[key]?.upcomingBookings || [],
-    schedule: data[key]?.schedule || [],
-    supportRequests: data[key]?.supportRequests || [],
-  };
-}
-
-// keep recentBookings as is, if you have a bookings array in data.json
+// This function is kept for any components that might still use it, but the main flow now uses getDashboardData
 export async function recentBookings(limit = 5) {
   await new Promise((r) => setTimeout(r, 220));
-  return data.bookings ? data.bookings.slice(0, limit) : [];
+  // Using the admin's recent bookings as a fallback generic list
+  return data.admin?.recentBookings ? data.admin.recentBookings.slice(0, limit) : [];
 }

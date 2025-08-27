@@ -1,167 +1,84 @@
 {
     "admin": {
         "kpis": {
-            "totalTurfs": 12,
-            "totalBookings": 345,
-            "revenueThisMonth": 95000,
-            "activeUsers": 45,
-            "newOwners": 3,
-            "newPlayers": 18
+            "totalRevenue": { "value": 450500, "change": 12.5 },
+            "totalBookings": { "value": 345, "change": 8.2 },
+            "activeTurfs": { "value": 9, "change": -1 },
+            "newUsers": { "value": 21, "change": 3 }
         },
         "charts": {
             "revenueTrend": [
-                12000,
-                15000,
-                18000,
-                20000,
-                17000,
-                13000
+                { "month": "Jan", "revenue": 65000 },
+                { "month": "Feb", "revenue": 59000 },
+                { "month": "Mar", "revenue": 80000 },
+                { "month": "Apr", "revenue": 81000 },
+                { "month": "May", "revenue": 56000 },
+                { "month": "Jun", "revenue": 95000 },
+                { "month": "Jul", "revenue": 110000 }
             ],
-            "bookingsByTurf": [
-                {
-                    "name": "Turf A",
-                    "value": 120
-                },
-                {
-                    "name": "Turf B",
-                    "value": 80
-                },
-                {
-                    "name": "Turf C",
-                    "value": 145
-                }
-            ],
-            "turfStatus": [
-                {
-                    "name": "Active",
-                    "value": 9
-                },
-                {
-                    "name": "Inactive",
-                    "value": 3
-                }
+            "planDistribution": [
+                { "name": "Commission-Based", "value": 5 },
+                { "name": "Subscription", "value": 3 },
+                { "name": "Premium", "value": 1 }
             ]
         },
-        "alerts": [
-            {
-                "type": "danger",
-                "message": "Server downtime reported for Turf C"
-            },
-            {
-                "type": "warning",
-                "message": "Revenue growth slowed this week"
-            },
-            {
-                "type": "info",
-                "message": "2 new owners pending verification"
-            }
+        "pendingApprovals": [
+            { "id": 7, "name": "New Star Arena", "type": "Turf", "requestDate": "2025-08-24" },
+            { "id": 8, "name": "Priya Singh", "type": "Owner", "requestDate": "2025-08-23" }
+        ],
+        "recentBookings": [
+            { "id": 1, "customer": "Rahul Sharma", "turf": "Greenfield Arena", "amount": 2400, "status": "Confirmed" },
+            { "id": 2, "customer": "Sneha Patil", "turf": "Royal Turf Arena", "amount": 4400, "status": "Confirmed" },
+            { "id": 3, "customer": "Vikas Joshi", "turf": "Sunshine Sports", "amount": 3000, "status": "Pending" }
         ]
     },
     "manager": {
         "kpis": {
-            "turfOccupancy": "78%",
-            "bookingsToday": 24,
-            "pendingApprovals": 5
+            "monthlyRevenue": { "value": 78000, "change": 5.7 },
+            "monthlyBookings": { "value": 62, "change": -2 },
+            "occupancyRate": { "value": 78, "change": 4 },
+            "pendingApprovals": { "value": 5, "change": 1 }
         },
         "charts": {
             "bookingTrend": [
-                5,
-                12,
-                8,
-                15,
-                9,
-                20,
-                18
+                { "day": "Mon", "bookings": 5 },
+                { "day": "Tue", "bookings": 12 },
+                { "day": "Wed", "bookings": 8 },
+                { "day": "Thu", "bookings": 15 },
+                { "day": "Fri", "bookings": 9 },
+                { "day": "Sat", "bookings": 20 },
+                { "day": "Sun", "bookings": 18 }
+            ],
+            "occupancyByTime": [
+                { "time": "6-9am", "occupancy": 80 },
+                { "time": "9-12pm", "occupancy": 40 },
+                { "time": "12-3pm", "occupancy": 30 },
+                { "time": "3-6pm", "occupancy": 65 },
+                { "time": "6-9pm", "occupancy": 95 },
+                { "time": "9-12am", "occupancy": 70 }
             ]
         },
         "upcomingBookings": [
-            {
-                "id": 1,
-                "customer": "Rahul",
-                "time": "10:00 AM",
-                "turf": "Turf A"
-            },
-            {
-                "id": 2,
-                "customer": "Sneha",
-                "time": "12:30 PM",
-                "turf": "Turf B"
-            }
+            { "id": 1, "customer": "Rahul", "time": "10:00 AM", "turf": "Greenfield Arena" },
+            { "id": 2, "customer": "Sneha", "time": "12:30 PM", "turf": "Blue Turf" },
+            { "id": 3, "customer": "Amit", "time": "04:00 PM", "turf": "Greenfield Arena" }
         ]
     },
     "staff": {
         "kpis": {
-            "assignedBookings": 6,
-            "checkinsToday": 3,
-            "pendingTasks": 2
+            "upcomingBookings": { "value": 6 },
+            "checkinsToday": { "value": 3 },
+            "pendingTasks": { "value": 2 }
         },
         "schedule": [
-            {
-                "time": "9:00 AM",
-                "task": "Prepare Turf A"
-            },
-            {
-                "time": "11:00 AM",
-                "task": "Assist Check-in Turf B"
-            },
-            {
-                "time": "2:00 PM",
-                "task": "Clean Turf C"
-            }
+            { "time": "09:00 AM", "task": "Prepare Greenfield Arena for 10am booking", "status": "Done" },
+            { "time": "11:00 AM", "task": "Assist Check-in at Blue Turf", "status": "Pending" },
+            { "time": "02:00 PM", "task": "Clean Sunshine Sports Ground", "status": "Pending" },
+            { "time": "04:00 PM", "task": "Inventory check for refreshments", "status": "Upcoming" }
         ],
-        "supportRequests": [
-            {
-                "id": 1,
-                "issue": "Booking Refund",
-                "customer": "Amit"
-            },
-            {
-                "id": 2,
-                "issue": "Reschedule Request",
-                "customer": "Pooja"
-            }
+        "activeBookings": [
+            { "id": 1, "turf": "Greenfield Arena", "time": "10:00 AM - 12:00 PM", "customer": "Rahul's Team" },
+            { "id": 2, "turf": "Royal Turf Arena", "time": "11:00 AM - 01:00 PM", "customer": "Corporate Event" }
         ]
-    },
-    "bookings": [
-        {
-            "id": 1,
-            "customer": "Rahul Sharma",
-            "turf": "Turf A",
-            "date": "2025-08-28",
-            "time": "18:00-20:00",
-            "status": "Confirmed"
-        },
-        {
-            "id": 2,
-            "customer": "Sneha Patil",
-            "turf": "Turf B",
-            "date": "2025-08-28",
-            "time": "20:00-22:00",
-            "status": "Pending"
-        },
-        {
-            "id": 3,
-            "customer": "Vikas Joshi",
-            "turf": "Turf C",
-            "date": "2025-08-29",
-            "time": "06:00-08:00",
-            "status": "Confirmed"
-        },
-        {
-            "id": 4,
-            "customer": "Neha Kulkarni",
-            "turf": "Turf A",
-            "date": "2025-08-29",
-            "time": "08:00-10:00",
-            "status": "Cancelled"
-        },
-        {
-            "id": 5,
-            "customer": "Aman Gupta",
-            "turf": "Turf D",
-            "date": "2025-08-30",
-            "time": "19:00-21:00",
-            "status": "Confirmed"
-        }
-    ]
+    }
 }

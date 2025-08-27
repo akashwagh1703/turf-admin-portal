@@ -11,11 +11,8 @@ export default function BookingManagement() {
 
   useEffect(() => {
     async function fetchData() {
-      // Get all turfs first
       const turfData = await getTurfs(user);
       setTurfs(turfData);
-
-      // Get bookings filtered by role/turf
       const bookingData = await getBookings(user, turfData);
       setBookings(bookingData);
     }
@@ -30,45 +27,69 @@ export default function BookingManagement() {
   };
 
   return (
-    <Container className="py-3">
-      <h2>Bookings</h2>
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Customer</th>
-            <th>Turf</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Status</th>
-            {user.role === "admin" && <th>Actions</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {bookings.map((b, i) => (
-            <tr key={b.id}>
-              <td>{i + 1}</td>
-              <td>{b.customer}</td>
-              <td>{b.turf}</td>
-              <td>{b.date}</td>
-              <td>{b.time}</td>
-              <td>{b.status}</td>
-              {user.role === "admin" && (
-                <td>
-                  <Form.Select
-                    value={b.status}
-                    onChange={(e) => handleStatusChange(b.id, e.target.value)}
-                  >
-                    <option>Confirmed</option>
-                    <option>Pending</option>
-                    <option>Cancelled</option>
-                  </Form.Select>
-                </td>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    <Container fluid className="p-0">
+      <div className="page-header">
+        <h3>Booking Management</h3>
+        <p className="text-muted">View and manage all turf bookings.</p>
+      </div>
+
+      <div className="card">
+        <div className="card-body p-0">
+          <div className="table-responsive">
+            <Table className="mb-0 table-hover">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Customer</th>
+                  <th>Turf</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                  {user.role.toLowerCase() !== "staff" && <th>Actions</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {bookings.map((b, i) => (
+                  <tr key={b.id}>
+                    <td>{i + 1}</td>
+                    <td><strong>{b.customer}</strong></td>
+                    <td>{b.turf}</td>
+                    <td>{b.date}</td>
+                    <td>{b.time}</td>
+                    <td>
+                      <span
+                        className={
+                          "badge " +
+                          (b.status === "Confirmed"
+                            ? "bg-success-subtle text-success-emphasis"
+                            : b.status === "Pending"
+                            ? "bg-warning-subtle text-warning-emphasis"
+                            : "bg-danger-subtle text-danger-emphasis")
+                        }
+                      >
+                        {b.status}
+                      </span>
+                    </td>
+                    {user.role.toLowerCase() !== "staff" && (
+                      <td>
+                        <Form.Select
+                          size="sm"
+                          value={b.status}
+                          onChange={(e) => handleStatusChange(b.id, e.target.value)}
+                        >
+                          <option>Confirmed</option>
+                          <option>Pending</option>
+                          <option>Cancelled</option>
+                        </Form.Select>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        </div>
+      </div>
     </Container>
   );
 }

@@ -1,100 +1,66 @@
-// src/components/dashboards/AdminDashboard.jsx
 import KPI from "../KPI.jsx";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
+  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid,
+  PieChart, Pie, Cell, ResponsiveContainer, Legend, BarChart, Bar
 } from "recharts";
+import { Button } from "react-bootstrap";
+import { Check, Eye } from "lucide-react";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const PIE_COLORS = ["#4f46e5", "#8b5cf6", "#3b82f6"];
 
-export default function AdminDashboard({ overview, extra, recent }) {
-  // console.log('overview:::', overview.activeTurfManagers)
+export default function AdminDashboard({ data, icons }) {
+  const { kpis, charts, pendingApprovals, recentBookings } = data;
+
   return (
     <>
       {/* KPIs */}
-      <div className="row g-3">
-        <div className="col-md-2 col-sm-6">
-          <KPI title="Total Turfs" value={overview.totalTurfs ?? "..."} />
+      <div className="row g-4">
+        <div className="col-xl-3 col-md-6">
+          <KPI title="Total Revenue" value={kpis.totalRevenue.value} change={kpis.totalRevenue.change} icon={icons.totalRevenue} prefix="₹" />
         </div>
-        <div className="col-md-2 col-sm-6">
-          <KPI title="Total Bookings" value={overview.totalBookings ?? "..."} />
+        <div className="col-xl-3 col-md-6">
+          <KPI title="Total Bookings" value={kpis.totalBookings.value} change={kpis.totalBookings.change} icon={icons.totalBookings} />
         </div>
-        <div className="col-md-2 col-sm-6">
-          <KPI title="Revenue (₹)" value={overview.revenueThisMonth ?? "..."} />
+        <div className="col-xl-3 col-md-6">
+          <KPI title="Active Turfs" value={kpis.activeTurfs.value} change={kpis.activeTurfs.change} icon={icons.activeTurfs} />
         </div>
-        <div className="col-md-2 col-sm-6">
-          <KPI title="Active Users" value={overview.activeUsers ?? "..."} />
-        </div>
-        <div className="col-md-2 col-sm-6">
-          <KPI title="New Turf Owners" value={overview.newOwners ?? "..."} />
-        </div>
-        <div className="col-md-2 col-sm-6">
-          <KPI title="New Players" value={overview.newPlayers ?? "..."} />
+        <div className="col-xl-3 col-md-6">
+          <KPI title="New Users This Month" value={kpis.newUsers.value} change={kpis.newUsers.change} icon={icons.newUsers} />
         </div>
       </div>
 
       {/* Charts */}
-      <div className="row mt-4">
-        <div className="col-md-6">
-          <div className="card shadow-sm">
-            <div className="card-header bg-white">
-              <strong>Revenue Trend</strong>
-            </div>
+      <div className="row g-4 mt-4">
+        <div className="col-lg-8">
+          <div className="card h-100">
+            <div className="card-header"><strong>Revenue Trend (YTD)</strong></div>
             <div className="card-body">
-              <ResponsiveContainer width="100%" height={250}>
-                <LineChart
-                  data={extra.charts?.revenueTrend?.map((val, i) => ({
-                    month: `M${i + 1}`,
-                    revenue: val,
-                  }))}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={charts.revenueTrend} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} />
                   <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="#82ca9d"
-                    strokeWidth={2}
-                  />
+                  <YAxis tickFormatter={(value) => `₹${value/1000}k`} />
+                  <Tooltip formatter={(value) => [`₹${new Intl.NumberFormat('en-IN').format(value)}`, "Revenue"]} />
+                  <Line type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 8 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
         </div>
 
-        <div className="col-md-6">
-          <div className="card shadow-sm">
-            <div className="card-header bg-white">
-              <strong>Bookings by Turf</strong>
-            </div>
+        <div className="col-lg-4">
+          <div className="card h-100">
+            <div className="card-header"><strong>Owner Plan Distribution</strong></div>
             <div className="card-body">
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={350}>
                 <PieChart>
-                  <Pie
-                    data={extra.charts?.bookingsByTurf || []}
-                    dataKey="value"
-                    nameKey="name"
-                    outerRadius={100}
-                    label
-                  >
-                    {extra.charts?.bookingsByTurf?.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
+                  <Pie data={charts.planDistribution} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={120} labelLine={false} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                    {charts.planDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip />
+                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -102,108 +68,52 @@ export default function AdminDashboard({ overview, extra, recent }) {
         </div>
       </div>
 
-      {/* Turf Status */}
-      <div className="row mt-4">
-        <div className="col-md-6">
-          <div className="card shadow-sm">
-            <div className="card-header bg-white">
-              <strong>Turfs Status (Active vs Inactive)</strong>
+      {/* Actionable Lists */}
+      <div className="row g-4 mt-4">
+        <div className="col-lg-5">
+            <div className="card h-100">
+                <div className="card-header"><strong>Pending Approvals</strong></div>
+                <div className="card-body">
+                    <ul className="list-group list-group-flush">
+                        {pendingApprovals.map(item => (
+                            <li key={item.id} className="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <div className="fw-bold">{item.name}</div>
+                                    <small className="text-muted">{item.type} requested on {item.requestDate}</small>
+                                </div>
+                                <div>
+                                    <Button variant="outline-success" size="sm" className="me-2"><Check size={16}/></Button>
+                                    <Button variant="outline-secondary" size="sm"><Eye size={16}/></Button>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
-            <div className="card-body">
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={extra.charts?.turfStatus || []}
-                    dataKey="value"
-                    nameKey="name"
-                    outerRadius={100}
-                    label
-                  >
-                    {extra.charts?.turfStatus?.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
         </div>
-
-        {/* Alerts */}
-        <div className="col-md-6">
-          <div className="card shadow-sm">
-            <div className="card-header bg-white">
-              <strong>Alerts & Notifications</strong>
+        <div className="col-lg-7">
+            <div className="card h-100">
+                <div className="card-header"><strong>Recent Transactions</strong></div>
+                <div className="card-body p-0">
+                    <div className="table-responsive">
+                        <table className="table table-hover mb-0">
+                            <thead>
+                                <tr><th>Customer</th><th>Turf</th><th>Amount</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                                {recentBookings.map((b) => (
+                                <tr key={b.id}>
+                                    <td><strong>{b.customer}</strong></td>
+                                    <td>{b.turf}</td>
+                                    <td>₹{new Intl.NumberFormat('en-IN').format(b.amount)}</td>
+                                    <td><span className={`badge bg-${b.status === "Confirmed" ? "success" : "warning"}-subtle text-${b.status === "Confirmed" ? "success" : "warning"}-emphasis`}>{b.status}</span></td>
+                                </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div className="card-body">
-              {extra.alerts?.length ? (
-                <ul className="list-group">
-                  {extra.alerts.map((a, i) => (
-                    <li
-                      key={i}
-                      className={`list-group-item list-group-item-${a.type}`}
-                    >
-                      {a.message}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted">No critical alerts</p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Bookings */}
-      <div className="card shadow-sm mt-4">
-        <div className="card-header bg-white">
-          <strong>Recent Bookings</strong>
-        </div>
-        <div className="card-body p-0">
-          <div className="table-responsive">
-            <table className="table table-hover mb-0">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Customer</th>
-                  <th>Turf</th>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recent.map((b) => (
-                  <tr key={b.id}>
-                    <td>{b.id}</td>
-                    <td>{b.customer}</td>
-                    <td>{b.turf}</td>
-                    <td>{b.date}</td>
-                    <td>{b.time}</td>
-                    <td>
-                      <span
-                        className={
-                          "badge bg-" +
-                          (b.status === "Confirmed"
-                            ? "success"
-                            : b.status === "Pending"
-                            ? "warning text-dark"
-                            : "secondary")
-                        }
-                      >
-                        {b.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
       </div>
     </>
