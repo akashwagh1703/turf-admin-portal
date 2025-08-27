@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Container } from "react-bootstrap";
+import { Plus } from "lucide-react";
 import TurfTable from "../components/turfs/TurfTable";
 import TurfForm from "../components/turfs/TurfForm";
-import TurfAnalytics from "../components/turfs/TurfAnalytics";
 import {
   getTurfs,
   addTurf,
@@ -14,7 +14,6 @@ import { useAuth } from "../store/AuthContext";
 
 const TurfManagement = () => {
   const { user } = useAuth();
-  const role = user?.role?.toLowerCase() || "staff";
   const [turfs, setTurfs] = useState([]);
   const [selectedTurf, setSelectedTurf] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -45,24 +44,33 @@ const TurfManagement = () => {
     setTurfs(turfs.map((t) => (t.id === id ? { ...t, approved } : t)));
   };
 
+  const handleOpenForm = (turf = null) => {
+    setSelectedTurf(turf);
+    setShowForm(true);
+  };
+
   return (
-    <Container className="py-3">
-      <h2>Turf Management</h2>
-      <Button className="mb-3" onClick={() => setShowForm(true)}>
-        + Add Turf
-      </Button>
-
-      <TurfTable
-        turfs={turfs}
-        onEdit={(t) => {
-          setSelectedTurf(t);
-          setShowForm(true);
-        }}
-        onToggle={handleToggle}
-        onApprove={handleApprove}
-      />
-
-      {selectedTurf && <TurfAnalytics turf={selectedTurf} />}
+    <Container fluid className="p-0">
+      <div className="page-header d-flex justify-content-between align-items-center">
+        <div>
+          <h3>Turf Management</h3>
+          <p className="text-muted">Add, edit, and manage all turfs in the system.</p>
+        </div>
+        <Button onClick={() => handleOpenForm()} className="d-flex align-items-center gap-2">
+          <Plus size={18} /> Add Turf
+        </Button>
+      </div>
+      
+      <div className="card">
+        <div className="card-body p-0">
+          <TurfTable
+            turfs={turfs}
+            onEdit={handleOpenForm}
+            onToggle={handleToggle}
+            onApprove={handleApprove}
+          />
+        </div>
+      </div>
 
       <TurfForm
         show={showForm}
