@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../store/AuthContext";
 import * as dash from "../services/dashboardService.js";
 import {
-  Users, MapPin, Ticket, DollarSign, UserPlus, PieChart, CheckCircle, Clock, List, MessageSquare, ClipboardList, TrendingUp
+  Users, MapPin, Ticket, DollarSign, UserPlus, PieChart, Clock, List, MessageSquare, ClipboardList
 } from "lucide-react";
 
 import AdminDashboard from "../components/dashboards/AdminDashboard.jsx";
@@ -11,21 +11,21 @@ import StaffDashboard from "../components/dashboards/StaffDashboard.jsx";
 
 const icons = {
   admin: {
-    totalRevenue: <DollarSign size={24} />,
-    totalBookings: <Ticket size={24} />,
-    activeTurfs: <MapPin size={24} />,
-    newUsers: <UserPlus size={24} />,
+    totalRevenue: <DollarSign size={28} />,
+    totalBookings: <Ticket size={28} />,
+    activeTurfs: <MapPin size={28} />,
+    newUsers: <UserPlus size={28} />,
   },
   manager: {
-    monthlyRevenue: <DollarSign size={24} />,
-    monthlyBookings: <Ticket size={24} />,
-    occupancyRate: <PieChart size={24} />,
-    pendingApprovals: <Clock size={24} />,
+    monthlyRevenue: <DollarSign size={28} />,
+    monthlyBookings: <Ticket size={28} />,
+    occupancyRate: <PieChart size={28} />,
+    pendingApprovals: <Clock size={28} />,
   },
   staff: {
-    upcomingBookings: <List size={24} />,
-    checkinsToday: <ClipboardList size={24} />,
-    pendingTasks: <MessageSquare size={24} />,
+    upcomingBookings: <List size={28} />,
+    checkinsToday: <ClipboardList size={28} />,
+    pendingTasks: <MessageSquare size={28} />,
   },
 };
 

@@ -1,12 +1,12 @@
 import KPI from "../KPI.jsx";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid,
-  PieChart, Pie, Cell, ResponsiveContainer, Legend, BarChart, Bar
+  PieChart, Pie, Cell, ResponsiveContainer, Legend
 } from "recharts";
 import { Button } from "react-bootstrap";
 import { Check, Eye } from "lucide-react";
 
-const PIE_COLORS = ["#4f46e5", "#8b5cf6", "#3b82f6"];
+const PIE_COLORS = ["#16a34a", "#4ade80", "#86efac"];
 
 export default function AdminDashboard({ data, icons }) {
   const { kpis, charts, pendingApprovals, recentBookings } = data;
@@ -37,11 +37,11 @@ export default function AdminDashboard({ data, icons }) {
             <div className="card-body">
               <ResponsiveContainer width="100%" height={350}>
                 <LineChart data={charts.revenueTrend} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} />
+                  <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
                   <XAxis dataKey="month" />
                   <YAxis tickFormatter={(value) => `₹${value/1000}k`} />
                   <Tooltip formatter={(value) => [`₹${new Intl.NumberFormat('en-IN').format(value)}`, "Revenue"]} />
-                  <Line type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="revenue" stroke="#16a34a" strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 8 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>

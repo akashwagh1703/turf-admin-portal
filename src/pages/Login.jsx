@@ -31,7 +31,7 @@ export default function Login() {
     <div className="login-container">
       <Card className="login-card">
         <Card.Body>
-          <h2 className="text-center mb-2 fw-bold display-6" style={{ color: 'var(--primary-color)' }}>Turf.</h2>
+          <h2 className="text-center mb-2 fw-bold display-6">Turf.</h2>
           <p className="text-center text-muted mb-4">Sign in to your management panel</p>
           
           {error && <div className="alert alert-danger py-2">{error}</div>}

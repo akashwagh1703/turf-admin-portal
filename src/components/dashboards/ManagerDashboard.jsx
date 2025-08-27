@@ -32,11 +32,11 @@ export default function ManagerDashboard({ data, icons }) {
                 <div className="card-body">
                 <ResponsiveContainer width="100%" height={350}>
                     <LineChart data={charts.bookingTrend} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} />
+                        <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
                         <XAxis dataKey="day" />
                         <YAxis />
                         <Tooltip />
-                        <Line type="monotone" dataKey="bookings" stroke="#4f46e5" strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 8 }} />
+                        <Line type="monotone" dataKey="bookings" stroke="#16a34a" strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 8 }} />
                     </LineChart>
                 </ResponsiveContainer>
                 </div>
@@ -73,12 +73,12 @@ export default function ManagerDashboard({ data, icons }) {
                 <div className="card-body">
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={charts.occupancyByTime}>
-                            <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} />
+                            <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
                             <XAxis dataKey="time" />
                             <YAxis unit="%" />
-                            <Tooltip cursor={{fill: 'rgba(79, 70, 229, 0.1)'}}/>
+                            <Tooltip cursor={{fill: 'rgba(22, 163, 74, 0.1)'}}/>
                             <Legend />
-                            <Bar dataKey="occupancy" fill="#4f46e5" name="Occupancy Rate" barSize={40} radius={[8, 8, 0, 0]} />
+                            <Bar dataKey="occupancy" fill="#16a34a" name="Occupancy Rate" barSize={40} radius={[8, 8, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
