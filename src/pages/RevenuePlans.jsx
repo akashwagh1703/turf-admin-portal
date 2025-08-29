@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import * as planService from "../services/planService.js";
 import { useAuth } from "../store/AuthContext";
-import { Form, Row, Col, Button, Modal, Table, Badge } from "react-bootstrap";
+import { Form, Row, Col, Button, Modal, Table } from "react-bootstrap";
 import { DollarSign, Tag, Users, Plus, Edit, Trash2, CheckCircle } from "lucide-react";
+import StatusBadge from "../components/common/StatusBadge.jsx";
+import PlanModal from "../components/plans/PlanModal.jsx";
+import PromoCodeModal from "../components/plans/PromoCodeModal.jsx";
 
 // ---------------- Tabs ----------------
 function Tabs({ activeTab, setActiveTab }) {
@@ -79,7 +82,7 @@ function OwnersTab({ owners, plans, onAssign }) {
                             <tr key={owner.id}>
                                 <td><strong>{owner.name}</strong></td>
                                 <td>{plan ? plan.name : 'N/A'}</td>
-                                <td><Badge bg={owner.status === 'Active' ? 'success-subtle' : 'warning-subtle'} className={owner.status === 'Active' ? 'text-success-emphasis' : 'text-warning-emphasis'}>{owner.status}</Badge></td>
+                                <td><StatusBadge status={owner.status} /></td>
                                 <td>{owner.joinedDate}</td>
                                 <td>{owner.nextBillingDate || 'N/A'}</td>
                                 <td>
@@ -119,13 +122,14 @@ function PromoCodesTab({ codes, onEdit, onAdd }) {
                     <tbody>
                         {codes.map(code => {
                             const isExpired = new Date(code.expiry) < new Date();
+                            const status = isExpired ? 'Expired' : 'Active';
                             return (
                                 <tr key={code.code}>
-                                    <td><Badge bg="primary-subtle" className="text-primary-emphasis p-2 font-monospace">{code.code}</Badge></td>
+                                    <td><span className="badge bg-primary-subtle text-primary-emphasis p-2 font-monospace">{code.code}</span></td>
                                     <td>{code.discountPercent}%</td>
                                     <td>{code.expiry}</td>
                                     <td>{code.used} / {code.maxUsage}</td>
-                                    <td><Badge bg={isExpired ? 'danger-subtle' : 'success-subtle'} className={isExpired ? 'text-danger-emphasis' : 'text-success-emphasis'}>{isExpired ? 'Expired' : 'Active'}</Badge></td>
+                                    <td><StatusBadge status={status} /></td>
                                     <td><button className="icon-button" onClick={() => onEdit(code)}><Edit size={16} /></button></td>
                                 </tr>
                             )
@@ -136,54 +140,6 @@ function PromoCodesTab({ codes, onEdit, onAdd }) {
         </div>
     );
 }
-
-// ---------------- Plan Modal ----------------
-function PlanModal({ show, handleClose, onSave, plan }) {
-    const [formData, setFormData] = useState({});
-
-    useEffect(() => {
-        setFormData(plan || { name: '', commissionPercent: 0, subscriptionFee: 0, billingCycle: 'Monthly', features: [] });
-    }, [plan]);
-
-    const handleFeatureChange = (index, value) => {
-        const newFeatures = [...formData.features];
-        newFeatures[index] = value;
-        setFormData({...formData, features: newFeatures});
-    }
-
-    const addFeature = () => setFormData({...formData, features: [...formData.features, '']});
-    const removeFeature = (index) => setFormData({...formData, features: formData.features.filter((_, i) => i !== index)});
-    
-    return (
-        <Modal show={show} onHide={handleClose} centered>
-            <Modal.Header closeButton><Modal.Title>{plan ? 'Edit Plan' : 'Add New Plan'}</Modal.Title></Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group className="mb-3"><Form.Label>Plan Name</Form.Label><Form.Control value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} /></Form.Group>
-                    <Row>
-                        <Col><Form.Group className="mb-3"><Form.Label>Subscription Fee (₹)</Form.Label><Form.Control type="number" value={formData.subscriptionFee || 0} onChange={e => setFormData({...formData, subscriptionFee: Number(e.target.value)})} /></Form.Group></Col>
-                        <Col><Form.Group className="mb-3"><Form.Label>Commission (%)</Form.Label><Form.Control type="number" value={formData.commissionPercent || 0} onChange={e => setFormData({...formData, commissionPercent: Number(e.target.value)})} /></Form.Group></Col>
-                    </Row>
-                    <Form.Group className="mb-3"><Form.Label>Billing Cycle</Form.Label><Form.Select value={formData.billingCycle} onChange={e => setFormData({...formData, billingCycle: e.target.value})}><option>Per Booking</option><option>Monthly</option><option>Yearly</option></Form.Select></Form.Group>
-                    <Form.Group className="mb-3"><Form.Label>Features</Form.Label>
-                        {formData.features?.map((f, i) => (
-                            <div key={i} className="d-flex gap-2 mb-2">
-                                <Form.Control value={f} onChange={e => handleFeatureChange(i, e.target.value)} />
-                                <Button variant="danger" onClick={() => removeFeature(i)}><Trash2 size={16} /></Button>
-                            </div>
-                        ))}
-                        <Button variant="outline-secondary" size="sm" onClick={addFeature}>Add Feature</Button>
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>Cancel</Button>
-                <Button variant="primary" onClick={() => onSave(formData)}>Save Plan</Button>
-            </Modal.Footer>
-        </Modal>
-    );
-}
-
 
 // ---------------- Main RevenuePlans ----------------
 export default function RevenuePlans() {
@@ -198,7 +154,6 @@ export default function RevenuePlans() {
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
 
-  // States for promo code modal would be similar
   const [showPromoModal, setShowPromoModal] = useState(false);
   const [editingPromo, setEditingPromo] = useState(null);
 
@@ -237,6 +192,18 @@ export default function RevenuePlans() {
     setTurfOwners(updatedOwners);
     alert('Plan assigned successfully!');
   }
+  
+  const handleOpenPromoModal = (promo = null) => {
+    setEditingPromo(promo);
+    setShowPromoModal(true);
+  }
+
+  const handleSavePromoCode = async (promo) => {
+    await planService.savePromoCode(promo);
+    const updatedCodes = await planService.listPromoCodes();
+    setPromoCodes(updatedCodes);
+    setShowPromoModal(false);
+  }
 
   const renderContent = () => {
     if (loading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
@@ -245,7 +212,7 @@ export default function RevenuePlans() {
         case "Plans": return <PlansTab plans={plans} onEdit={handleOpenPlanModal} onAdd={() => handleOpenPlanModal()} />;
         case "Turf Owners": 
             return role === 'admin' ? <OwnersTab owners={turfOwners} plans={plans} onAssign={handleAssignPlan} /> : <p>This section is for Admins only.</p>;
-        case "Promo Codes": return <PromoCodesTab codes={promoCodes} onEdit={() => {}} onAdd={() => {}} />;
+        case "Promo Codes": return <PromoCodesTab codes={promoCodes} onEdit={handleOpenPromoModal} onAdd={() => handleOpenPromoModal()} />;
         default: return null;
     }
   }
@@ -271,6 +238,16 @@ export default function RevenuePlans() {
             handleClose={() => setShowPlanModal(false)}
             onSave={handleSavePlan}
             plan={editingPlan}
+        />
+      )}
+
+      {showPromoModal && (
+        <PromoCodeModal
+            show={showPromoModal}
+            handleClose={() => setShowPromoModal(false)}
+            onSave={handleSavePromoCode}
+            promo={editingPromo}
+            plans={plans}
         />
       )}
     </div>

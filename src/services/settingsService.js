@@ -1,5 +1,6 @@
-// Simulated backend for Content & Settings module
-import settingsData from "../mock/settings.json";
+import mockData from "../mock/settings.json";
+
+let settingsData = JSON.parse(JSON.stringify(mockData));
 
 // Get all settings
 export const getSettings = async () => {
@@ -8,76 +9,32 @@ export const getSettings = async () => {
   });
 };
 
-// Save a single page content
-export const savePage = async (page, content) => {
-  settingsData.admin.pages[page] = content;
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ success: true }), 300)
-  );
-};
+// Generic save function to update parts of the settings object
+const saveSetting = (key, data) => {
+    // A simple way to handle nested keys like "seo" or "global"
+    const keys = key.split('.');
+    let current = settingsData;
+    while (keys.length > 1) {
+        current = current[keys.shift()];
+    }
+    current[keys[0]] = data;
 
-// Save templates (SMS, Email, PushNotifications)
-export const saveTemplates = async (templates) => {
-  settingsData.admin.templates = templates;
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ success: true }), 300)
-  );
-};
+    return new Promise((resolve) =>
+        setTimeout(() => resolve({ success: true }), 300)
+    );
+}
 
-// Save payment credentials
-export const savePayment = async (credentials) => {
-  settingsData.admin.credentials = credentials;
+// Specific save functions for clarity, all using the generic handler
+export const savePage = (page, content) => {
+  settingsData.pages[page] = content;
   return new Promise((resolve) =>
     setTimeout(() => resolve({ success: true }), 300)
   );
 };
-
-// Save global settings
-export const saveGlobal = async (globalSettings) => {
-  settingsData.admin.global = globalSettings;
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ success: true }), 300)
-  );
-};
-
-// Save announcements
-export const saveAnnouncements = async (announcements) => {
-  settingsData.admin.announcements = announcements;
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ success: true }), 300)
-  );
-};
-
-// Save theme settings (logo, platformName, turf owner customization)
-export const saveTheme = async (theme) => {
-  settingsData.admin.theme = theme;
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ success: true }), 300)
-  );
-};
-
-// Save SEO settings
-export const saveSEO = async (seo) => {
-  settingsData.admin.seo = seo;
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ success: true }), 300)
-  );
-};
-
-// Save features toggles
-export const saveFeatures = async (features) => {
-  settingsData.admin.features = features;
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ success: true }), 300)
-  );
-};
-
-// Save role-based permissions
-export const saveRolePermissions = async (role, permissions) => {
-  if (settingsData.roles[role]) {
-    settingsData.roles[role] = permissions;
-  }
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ success: true }), 300)
-  );
-};
+export const saveTemplates = (templates) => saveSetting("templates", templates);
+export const savePayment = (credentials) => saveSetting("credentials", credentials);
+export const saveGlobal = (globalSettings) => saveSetting("global", globalSettings);
+export const saveAnnouncements = (announcements) => saveSetting("announcements", announcements);
+export const saveSEO = (seo) => saveSetting("seo", seo);
+export const saveFeatures = (features) => saveSetting("features", features);
+export const saveRolePermissions = (roles) => saveSetting("roles", roles);

@@ -1,4 +1,6 @@
-import planData from "../mock/plan.json";
+import mockData from "../mock/plan.json";
+
+let planData = JSON.parse(JSON.stringify(mockData));
 
 // Get all plans
 export const listPlans = async () =>
@@ -10,10 +12,11 @@ export const savePlan = async (plan) => {
   if (index > -1) {
     planData.plans[index] = plan;
   } else {
-    planData.plans.push({ ...plan, id: Date.now() });
+    plan.id = Date.now();
+    planData.plans.push(plan);
   }
   return new Promise((resolve) =>
-    setTimeout(() => resolve({ success: true, plans: planData.plans }), 300)
+    setTimeout(() => resolve({ success: true }), 300)
   );
 };
 
@@ -28,9 +31,8 @@ export const assignPlan = async (turfOwnerId, planId) => {
   const owner = planData.turfOwners.find((t) => t.id === turfOwnerId);
   if (owner) {
     owner.planId = planId;
-    // Assign billing only if subscription plan
     const assignedPlan = planData.plans.find((p) => p.id === planId);
-    if (assignedPlan.billingCycle !== "Per Booking") {
+    if (assignedPlan && assignedPlan.billingCycle !== "Per Booking") {
       owner.nextBillingDate = new Date(
         new Date().setMonth(new Date().getMonth() + 1)
       )
@@ -41,7 +43,7 @@ export const assignPlan = async (turfOwnerId, planId) => {
     }
   }
   return new Promise((resolve) =>
-    setTimeout(() => resolve({ success: true, turfOwners: planData.turfOwners }), 300)
+    setTimeout(() => resolve({ success: true }), 300)
   );
 };
 
@@ -60,10 +62,7 @@ export const savePromoCode = async (code) => {
     planData.promoCodes.push(code);
   }
   return new Promise((resolve) =>
-    setTimeout(
-      () => resolve({ success: true, promoCodes: planData.promoCodes }),
-      300
-    )
+    setTimeout(() => resolve({ success: true }), 300)
   );
 };
 

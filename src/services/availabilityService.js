@@ -1,4 +1,6 @@
-import data from "../mock/availability.json";
+import mock from "../mock/availability.json";
+
+let data = JSON.parse(JSON.stringify(mock));
 
 // Fetch availability for a specific turf
 export async function getAvailability(turfId) {

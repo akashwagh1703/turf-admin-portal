@@ -3,6 +3,7 @@ import { Container, Table, Button, Form } from "react-bootstrap";
 import { useAuth } from "../store/AuthContext";
 import { getBookings, updateBookingStatus } from "../services/bookingService";
 import { getTurfs } from "../services/turfService";
+import StatusBadge from "../components/common/StatusBadge";
 
 export default function BookingManagement() {
   const { user } = useAuth();
@@ -57,18 +58,7 @@ export default function BookingManagement() {
                     <td>{b.date}</td>
                     <td>{b.time}</td>
                     <td>
-                      <span
-                        className={
-                          "badge " +
-                          (b.status === "Confirmed"
-                            ? "bg-success-subtle text-success-emphasis"
-                            : b.status === "Pending"
-                            ? "bg-warning-subtle text-warning-emphasis"
-                            : "bg-danger-subtle text-danger-emphasis")
-                        }
-                      >
-                        {b.status}
-                      </span>
+                      <StatusBadge status={b.status} />
                     </td>
                     {user.role.toLowerCase() !== "staff" && (
                       <td>

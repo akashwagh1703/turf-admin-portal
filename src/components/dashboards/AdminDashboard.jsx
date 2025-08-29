@@ -5,6 +5,7 @@ import {
 } from "recharts";
 import { Button } from "react-bootstrap";
 import { Check, Eye } from "lucide-react";
+import StatusBadge from "../common/StatusBadge.jsx";
 
 const PIE_COLORS = ["#16a34a", "#4ade80", "#86efac"];
 
@@ -106,7 +107,7 @@ export default function AdminDashboard({ data, icons }) {
                                     <td><strong>{b.customer}</strong></td>
                                     <td>{b.turf}</td>
                                     <td>₹{new Intl.NumberFormat('en-IN').format(b.amount)}</td>
-                                    <td><span className={`badge bg-${b.status === "Confirmed" ? "success" : "warning"}-subtle text-${b.status === "Confirmed" ? "success" : "warning"}-emphasis`}>{b.status}</span></td>
+                                    <td><StatusBadge status={b.status} /></td>
                                 </tr>
                                 ))}
                             </tbody>

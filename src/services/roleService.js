@@ -1,4 +1,6 @@
-import rolesData from "../mock/roles.json";
+import mockData from "../mock/roles.json";
+
+let rolesData = JSON.parse(JSON.stringify(mockData));
 
 export const roleService = {
   getRoles: () => {
@@ -8,8 +10,9 @@ export const roleService = {
     return Promise.resolve(rolesData.permissions);
   },
   addRole: (role) => {
-    rolesData.roles.push({ ...role, id: Date.now() });
-    return Promise.resolve(role);
+    const newRole = { ...role, id: Date.now() };
+    rolesData.roles.push(newRole);
+    return Promise.resolve(newRole);
   },
   updateRole: (id, updated) => {
     const index = rolesData.roles.findIndex((r) => r.id === id);

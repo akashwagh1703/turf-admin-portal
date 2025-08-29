@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import * as userService from "../services/userService.js";
 import { Plus, Edit, ToggleLeft, ToggleRight, KeyRound, Activity } from "lucide-react";
 import { Modal, Form, Row, Col, Button } from "react-bootstrap";
+import StatusBadge from "../components/common/StatusBadge.jsx";
 
 // Users Table Component
 function UsersTable({ users, onEdit, toggleStatus, resetPassword }) {
@@ -29,11 +30,7 @@ function UsersTable({ users, onEdit, toggleStatus, resetPassword }) {
                   <span className="badge bg-primary-subtle text-primary-emphasis rounded-pill">{u.role}</span>
                 </td>
                 <td>
-                  {u.status === "Active" ? (
-                    <span className="badge bg-success-subtle text-success-emphasis rounded-pill">Active</span>
-                  ) : (
-                    <span className="badge bg-danger-subtle text-danger-emphasis rounded-pill">Inactive</span>
-                  )}
+                  <StatusBadge status={u.status} />
                 </td>
                 <td>
                   <button className="icon-button" title="Edit" onClick={() => onEdit(u)}>
@@ -122,13 +119,7 @@ export default function Users() {
   const [editingUser, setEditingUser] = useState(null);
 
   useEffect(() => {
-    userService.listUsers().then(u => {
-        const transformedUsers = u.map(user => ({
-            ...user,
-            role: user.role.split(' ').find(r => ['Admin', 'Manager', 'Staff'].includes(r)) || 'Staff'
-        }));
-        setUsers(transformedUsers);
-    });
+    userService.listUsers().then(setUsers);
   }, []);
 
   const filteredUsers =

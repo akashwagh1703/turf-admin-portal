@@ -1,7 +1,7 @@
-import data from "../mock/data.json";
+import mockData from "../mock/data.json";
 
 // Keep an in-memory copy so we can modify it
-let users = [...data.users];
+let users = JSON.parse(JSON.stringify(mockData.users));
 
 export async function listUsers() {
   await new Promise((r) => setTimeout(r, 150));
@@ -23,26 +23,25 @@ export async function createUser(newUser) {
 
 export async function updateUser(id, updates) {
   await new Promise((r) => setTimeout(r, 100));
-  users = users.map((u) => (u.id === id ? { ...u, ...updates } : u));
-  return users.find((u) => u.id === id);
-}
-
-export async function deactivateUser(id) {
-  return updateUser(id, { status: "Inactive" });
-}
-
-export async function activateUser(id) {
-  return updateUser(id, { status: "Active" });
+  let userToUpdate;
+  users = users.map((u) => {
+    if (u.id === id) {
+      userToUpdate = { ...u, ...updates };
+      return userToUpdate;
+    }
+    return u;
+  });
+  return userToUpdate;
 }
 
 export async function resetPassword(id) {
   await new Promise((r) => setTimeout(r, 100));
-  return { id, message: "Password has been reset successfully." };
-}
-
-export async function filterByRole(role) {
-  await new Promise((r) => setTimeout(r, 100));
-  return users.filter((u) => u.role === role);
+  const user = users.find(u => u.id === id);
+  if (user) {
+    // In a real app, you'd send a reset email. Here we just confirm.
+    console.log(`Password reset for ${user.email}`);
+  }
+  return { id, message: `Password reset initiated for user ${id}.` };
 }
 
 export async function getActivityLogs(id) {

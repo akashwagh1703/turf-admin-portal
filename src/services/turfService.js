@@ -1,4 +1,6 @@
-import data from "../mock/turfs.json";
+import mock from "../mock/turfs.json";
+
+let data = JSON.parse(JSON.stringify(mock));
 
 // Get all turfs
 export async function getTurfs(user) {
@@ -27,7 +29,7 @@ export async function updateTurf(id, updatedTurf) {
   await new Promise((r) => setTimeout(r, 200));
   const index = data.turfs.findIndex((t) => t.id === id);
   if (index !== -1) {
-    data.turfs[index] = { ...updatedTurf, id };
+    data.turfs[index] = { ...data.turfs[index], ...updatedTurf, id };
     return data.turfs[index];
   }
   return null;
@@ -54,37 +56,3 @@ export async function approveTurf(id, approved) {
   }
   return null;
 }
-
-// Update media (photos, videos, gifs, documents)
-export async function updateMedia(id, media) {
-  await new Promise((r) => setTimeout(r, 200));
-  const turf = data.turfs.find((t) => t.id === id);
-  if (turf) {
-    turf.media = media;
-    return { id, media };
-  }
-  return null;
-}
-
-// Update location (state, city, village, latitude, longitude)
-export async function updateLocation(id, location) {
-  await new Promise((r) => setTimeout(r, 200));
-  const turf = data.turfs.find((t) => t.id === id);
-  if (turf) {
-    turf.location = location;
-    return { id, location };
-  }
-  return null;
-}
-
-// Update pricing (weekdays/weekends)
-export async function updatePricing(id, pricePerHour) {
-  await new Promise((r) => setTimeout(r, 200));
-  const turf = data.turfs.find((t) => t.id === id);
-  if (turf) {
-    turf.pricePerHour = pricePerHour;
-    return { id, pricePerHour };
-  }
-  return null;
-}
-// Update amenities (lighting, parking, seating, refreshments)

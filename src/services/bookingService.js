@@ -1,11 +1,6 @@
-// import data from '../mock/data.json'
+import mock from "../mock/bookings.json";
 
-// export async function listBookings() {
-//   await new Promise(r => setTimeout(r, 250))
-//   return data.bookings
-// }
-
-import data from "../mock/bookings.json";
+let data = JSON.parse(JSON.stringify(mock));
 
 // Fetch bookings based on user role
 export async function getBookings(user, turfs = []) {
@@ -24,5 +19,9 @@ export async function getBookings(user, turfs = []) {
 // Update booking status
 export async function updateBookingStatus(id, status) {
   await new Promise((r) => setTimeout(r, 200));
+  const booking = data.bookings.find(b => b.id === id);
+  if (booking) {
+    booking.status = status;
+  }
   return { id, status };
 }
